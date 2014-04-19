@@ -1,10 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from numpy import genfromtxt
-import numpy as np
+import os
 import csv
 import collections
-import matplotlib.pyplot as plt
+import numpy as np     ## vector and matrix operations
+import scipy as sp     ## grab-bag of statistical and science tools
+import matplotlib.pyplot as plt     ## matplotlib - plots
+import pandas as pd     ## emulates R data frames
+import statsmodels.api as sm     ## scikits.statsmodels - statistics library
+import patsy    ## emulates R model formulas
+import math
+import sklearn as skl     ## scikits.learn - machine learning library
+from sklearn import mixture as sklmix
 MemberfileName="Members_Y1.csv"
 global claimsAns
 def svmtest():
@@ -425,4 +433,132 @@ def test():
     for i in l:
         c=claims[(claims[:,12]==i)]
     print np.corrcoef(a,b)
+    
+    
+def summary(filePath="Claims_Y1.csv"):
+    fileName, fileExtension = os.path.splitext(filePath)
+    if fileExtension==".npy":
+        claimsAns=np.load(filePath)    
+        d=pd.DataFrame(claimsAns)
+    elif fileExtension==".csv":
+        d=pd.read_csv(filePath)
+    d.describe()
+    return d
+def RMSLE_Release1():
+    dihY2=pd.read_csv("DayInHospital_Y2.csv",index_col='memberid')
+    allZero_RMSLE=math.sqrt(sum(dihY2['DaysInHospital_Y2'].apply(math.log1p).pow(2))/dihY2.shape[0])
+    print allZero_RMSLE
+    #dihY2['ans'] = pd.Series(dihY2['DaysInHospital_Y2'], index=dihY2.index)
+    dihY2['ans'] = pd.Series([0]*dihY2.shape[0], index=dihY2.index)
+    #print dihY2
+    diff=dihY2['DaysInHospital_Y2'].apply(math.log1p)-dihY2['ans'].apply(math.log1p)    
+    #print diff
+    diff=diff.pow(2)
+    #print diff
+    print math.sqrt(sum(diff)/dihY2.shape[0])
+    #print math.sqrt(sum(diff)/dihY2.shape[0])
+    return dihY2
+
+def RMSLE_Release3():
+    dihY2=pd.read_csv("DayInHospital_Y2.csv",index_col='MemberID')
+    allZero_RMSLE=math.sqrt(sum(dihY2['DaysInHospital_Y2'].apply(math.log1p).pow(2))/dihY2.shape[0])
+    print allZero_RMSLE
+    #dihY2['ans'] = pd.Series(dihY2['DaysInHospital_Y2'], index=dihY2.index)
+    dihY2['ans'] = pd.Series([0]*shape[0], index=dihY2.index)
+    #print dihY2
+    diff=dihY2['DaysInHospital'].apply(math.log1p)-dihY2['ans'].apply(math.log1p)    
+    diff=diff.pow(2)
+    print math.sqrt(sum(diff)/dihY2.shape[0])
+    #math.sqrt(sum(/dihY2.shape[0])
+    return dihY2
+def calimsPlot():
+    """
+    ipython -pylab
+    """
+    claims=pd.read_csv("Claims_Y1.csv",index_col='MemberID')
+    for i in claims.columns:        
+        t=claims[i].value_counts()
+        if t.count()>30:
+            t.plot(title=i)
+        else:
+            t.plot(title=i,kind='bar',yticks=t)
+        raw_input("wait...")
+        plt.clf()
+            
+def Test():
+    from sklearn import cross_validation
+    from sklearn import svm
+    from sklearn.ensemble import RandomForestClassifier
+    m=pd.load("featuresSet")
+    result={}
+    for i in range(15,299):
+        X=m[[m.columns[i]]]
+        print m.columns[i]
+        Y=m["DaysInHospital_Y2"]
+        X_train, X_test, y_train, y_test=cross_validation.train_test_split(X,Y,test_size=0.95,random_state=0)
+        clf = RandomForestClassifier(n_estimators=100)
+        #clf = svm.SVC(kernel='rbf', C=1).fit(X_train, y_train)
+        clf = svm.SVC(kernel='linear', C=1).fit(X_train, y_train)
+        
+        #clf = clf.fit(X_train, y_train)
+        score=clf.score(X_test, y_test)   
+        result[m.columns[i]]=score
+        print m.columns[i],score
+    return result
+    
+
+
+
+def Merge():
+    dihY2=pd.read_csv("DayInHospital_Y2.csv")
+    dihY2.rename(columns={'memberid':'MemberID'},inplace=True)
+    claims=pd.read_csv("Claims_Y1.csv")        
+    m=pd.merge(claims,dihY2,on='MemberID')
+    member=pd.read_csv("Members_Y1.csv")
+    m=pd.merge(m,member,on='MemberID')    
+    return m
+    #expend features
+    """
+    Index([u'MemberID', u'ProviderID', u'vendor', u'pcp', u'Year', u'specialty', u'placesvc', u'paydelay', u'LengthOfStay', u'dsfs',
+    u'PrimaryConditionGroup', u'CharlsonIndex', u'DaysInHospital_Y2', u'sex', u'AgeAtFirstClaim'], dtype='object')
+    MemberID (77289,)
+    ProviderID (7825,)
+    vendor (3851,)
+    pcp (1012,)
+    Year (1,)
+    specialty (12,)
+    placesvc (8,)
+    paydelay (163,)
+    LengthOfStay (13,)
+    dsfs (12,)
+    PrimaryConditionGroup (45,)
+    CharlsonIndex (4,)
+    DaysInHospital_Y2 (16,)
+    sex (2,)
+    AgeAtFirstClaim (9,)
+    
+    new features:15-299
+    """
+    for i in m.columns:
+        
+        if i=="MemberID" or i=="ProviderID" or i=="vendor" or i=="pcp" or i=="Year":
+            continue
+        
+        else:
+            categories=m[i].unique()
+            for j in categories:
+                #print j
+                print m.shape
+                fieldName=i+str(j)
+                fieldName=fieldName.replace(" ","_")
+                fieldName=fieldName.replace(".0","")                            
+                m[fieldName]=pd.Series((m[i]==j)+0, index=m.index)
+                #print m[fieldName]
+                #raw_input("wait for me")
+            
+    return m
+    
+    
+    
+    
 
