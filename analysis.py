@@ -588,7 +588,7 @@ def Merge():
     m=pd.merge(claims,dihY2,on='MemberID')
     member=pd.read_csv("Members_Y1.csv")
     m=pd.merge(m,member,on='MemberID')    
-    #return m
+    return m
     #expend features
     """
     Index([u'MemberID', u'ProviderID', u'vendor', u'pcp', u'Year', u'specialty', u'placesvc', u'paydelay', u'LengthOfStay', u'dsfs',
@@ -1607,3 +1607,159 @@ sort dict
 
 """
 
+
+def madDataTest():
+    mad=pd.read_csv("../mad_mark/Data_Set1.csv")
+    mad.YEAR_t.replace("Y2",2,inplace=True)
+    mad.YEAR_t.replace("Y1",1,inplace=True)
+    mad.YEAR_t.replace("Y3",3,inplace=True)
+    #mad.YEAR_t
+    #mad.DaysInHospital.corr(mad.labCount_ave)
+    for i in mad.columns:
+        print i,"=",mad.DaysInHospital.corr(mad[i])
+    """
+    MemberID_t = -0.00430663479898
+    YEAR_t = -0.00927449651427
+    ClaimsTruncated = 0.164786506045
+    DaysInHospital = 1.0
+    trainset = nan
+    age_05 = -0.056000826995
+    age_15 = -0.0601445986863
+    age_25 = -0.00794499300771
+    age_35 = -0.0307292866905
+    age_45 = -0.0562487273939
+    age_55 = -0.0390754357467
+    age_65 = 0.00590304481323
+    age_75 = 0.0710671217519
+    age_85 = 0.101658629313
+    age_MISS = 0.0817565359938
+    sexMALE = -0.0699930216563
+    sexFEMALE = -0.0389861128079
+    sexMISS = 0.135082061456
+    no_Claims = 0.191122215283
+    no_Providers = 0.178687347617
+    no_Vendors = 0.173838642771
+    no_PCPs = 0.0121198329051
+    no_PlaceSvcs = 0.140370771264
+    no_Specialities = 0.137277180517
+    no_PrimaryConditionGroups = 0.175969203523
+    no_ProcedureGroups = 0.128295617971
+    PayDelay_max = 0.0992427451976
+    PayDelay_min = -0.0630307029362
+    PayDelay_ave = -0.00278160937172
+    PayDelay_stdev = 0.0608644578676
+    LOS_max = 0.0797714260777
+    LOS_min = 0.0667063794365
+    LOS_ave = 0.0752849145203
+    LOS_stdev = 0.0554133074581
+    LOS_TOT_UNKNOWN = 0.186738680016
+    LOS_TOT_SUPRESSED = 0.0666110899297
+    LOS_TOT_KNOWN = 0.0998976373244
+    dsfs_max = 0.117510833593
+    dsfs_min = 0.0264104171893
+    dsfs_range = 0.116861895669
+    dsfs_ave = 0.115028853457
+    dsfs_stdev = 0.0790663596738
+    CharlsonIndexI_max = 0.152195922287
+    CharlsonIndexI_min = 0.0969224672947
+    CharlsonIndexI_ave = 0.128451989723
+    CharlsonIndexI_range = 0.113541948358
+    CharlsonIndexI_stdev = 0.0933374209541
+    pcg1 = 0.0739520510236
+    pcg2 = 0.0701540027474
+    pcg3 = 0.073081058508
+    pcg4 = 0.0598992069914
+    pcg5 = 0.0206281638522
+    pcg6 = 0.0631887218619
+    pcg7 = 0.0358078824202
+    pcg8 = 0.0802693288378
+    pcg9 = 0.0184279963971
+    pcg10 = 0.014268701358
+    pcg11 = 0.0541839153383
+    pcg12 = 0.0433781039322
+    pcg13 = 0.088400528648
+    pcg14 = 0.0461191112097
+    pcg15 = 0.0117985040715
+    pcg16 = 0.0402131926482
+    pcg17 = 0.0598554861521
+    pcg18 = 0.0187439344017
+    pcg19 = 0.042720851816
+    pcg20 = 0.00379793739162
+    pcg21 = 0.0748739537197
+    pcg22 = 0.0392314138858
+    pcg23 = 0.0630112715716
+    pcg24 = 0.0433466926681
+    pcg25 = 0.044333060569
+    pcg26 = 0.016335777267
+    pcg27 = 0.0697714174108
+    pcg28 = 0.0141534115619
+    pcg29 = 0.0456076464901
+    pcg30 = 0.0288611920168
+    pcg31 = 0.0673984521504
+    pcg32 = 0.0223942847207
+    pcg33 = 0.028283477293
+    pcg34 = 0.00914701124468
+    pcg35 = 0.029335526754
+    pcg36 = 0.0140463023075
+    pcg37 = 0.0224534022296
+    pcg38 = 0.0186871861388
+    pcg39 = 0.0169385080861
+    pcg40 = 0.0109552477521
+    pcg41 = 0.0187205316449
+    pcg42 = 0.00491891392811
+    pcg43 = 0.0017518099961
+    pcg44 = 0.00818767366843
+    pcg45 = 0.0140123301906
+    pcg46 = 0.00883582358705
+    sp1 = 0.152888243685
+    sp2 = 0.122094967867
+    sp3 = 0.0640035275466
+    sp4 = 0.0737214001397
+    sp5 = 0.143974908375
+    sp6 = 0.110255300723
+    sp7 = 0.0551049348415
+    sp8 = -0.0238768672022
+    sp9 = 0.0186497755297
+    sp10 = 0.0217599186855
+    sp11 = 0.0396079256916
+    sp12 = 0.0272451851112
+    sp13 = 0.0310359051973
+    pg1 = 0.180603203581
+    pg2 = 0.130500472696
+    pg3 = 0.0989434232062
+    pg4 = 0.104746767113
+    pg5 = 0.130613637835
+    pg6 = 0.0824205260144
+    pg7 = 0.0558458721711
+    pg8 = 0.0494179291948
+    pg9 = 0.0338332976682
+    pg10 = 0.0191526309919
+    pg11 = 0.0243548858649
+    pg12 = 0.0299536739902
+    pg13 = 0.0353286480335
+    pg14 = 0.00706503580015
+    pg15 = 0.021954660059
+    pg16 = 0.0267342776726
+    pg17 = 0.00386111888478
+    pg18 = 0.0107106095828
+    ps1 = 0.141355718628
+    ps2 = 0.122261227779
+    ps3 = 0.099203413729
+    ps4 = 0.0534632445368
+    ps5 = 0.11766203886
+    ps6 = 0.0131791248721
+    ps7 = 0.0638188178692
+    ps8 = 0.0367284858509
+    ps9 = 0.0257697994186
+    drugCount_max = 0.144863776508
+    drugCount_min = 0.0840087974342
+    drugCount_ave = 0.13746106908
+    drugcount_months = 0.125304891143
+    labCount_max = 0.101091758852
+    labCount_min = 0.0194693581889
+    labCount_ave = 0.0652144810954
+    labcount_months = 0.130701721624
+    labNull = -0.0658304784586
+    drugNull = -0.0667253925286
+
+    """
