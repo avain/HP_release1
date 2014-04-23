@@ -1776,13 +1776,99 @@ def TestUserInY2():
     """
     pass
 
+def FeatureGeneration():
+    import pandas as pd
+    dih=pd.read_csv("DayInHospital_Y2.csv")
+    c=pd.read_csv("Claims_Y1.csv")
+    dih['predict'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    dih['predict'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    dih['claims_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    dih['providers_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    dih['PCPs_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    dih['vendors_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    dih['placesvc_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    dih['specialities_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    dih['primaryconditionGroups_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    
+    #dih['paydelay_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    #dih['paydelay_max'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    #dih['paydelay_min'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    #dih['paydelay_average'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    #dih['paydelay_var'] = pd.Series([0]*dih.shape[0], index=dih.index)
+    
+    
+    """
+    no_Claims = 0.191122215283
+    no_Providers = 0.178687347617
+    no_Vendors = 0.173838642771
+    no_PCPs = 0.0121198329051
+    no_PlaceSvcs = 0.140370771264
+    no_Specialities = 0.137277180517
+    no_PrimaryConditionGroups = 0.175969203523
+    no_ProcedureGroups = 0.128295617971
+    
+    """
+    total=len(dih.memberid)
+    j=1
+    for i in dih.memberid:    
+        print j,"/",total
+        j=j+1
+        dih.providers_count[dih.memberid==i]=len(c[c.MemberID==i].ProviderID.unique())
+        dih.PCPs_count[dih.memberid==i]=len(c[c.MemberID==i].pcp.unique())
+        dih.vendors_count[dih.memberid==i]=len(c[c.MemberID==i].vendor.unique())
+        dih.specialities_count[dih.memberid==i]=len(c[c.MemberID==i].specialty.unique())
+        dih.primaryconditionGroups_count[dih.memberid==i]=len(c[c.MemberID==i].PrimaryConditionGroup.unique())
+        dih.placesvc_count[dih.memberid==i]=len(c[c.MemberID==i].placesvc.unique())
+        dih.claims_count[dih.memberid==i]=len(c[c.MemberID==i])
+    return c,dih
 
-import pandas as pd
-dih=pd.read_csv("DayInHospital_Y2.csv")
-c=pd.read_csv("Claims_Y1.csv")
-dih['predict'] = pd.Series([0]*shape[0], index=dih.index)
-dih['predict'] = pd.Series([0]*dih.shape[0], index=dih.index)
-dih['claims_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
-for i in dih.memberid:
-    dih.claims_count[dih.memberid==i]=c[c.MemberID==i].count()
+"""
+memberid  DaysInHospital_Y2  predict  \
+memberid                      1.000000          -0.002549      NaN   
+DaysInHospital_Y2            -0.002549           1.000000      NaN   
+predict                            NaN                NaN      NaN   
+claims_count                       NaN                NaN      NaN   
+providers_count               0.000478           0.199815      NaN   
+PCPs_count                   -0.002911           0.038937      NaN   
+vendors_count                 0.000747           0.194589      NaN   
+placesvc_count                0.001009           0.166937      NaN   
+specialities_count            0.000990           0.150488      NaN   
+primaryconditionGroups_count  0.000296           0.188758      NaN   
 
+                              claims_count  providers_count  PCPs_count  \
+memberid                               NaN         0.000478   -0.002911   
+DaysInHospital_Y2                      NaN         0.199815    0.038937   
+predict                                NaN              NaN         NaN   
+claims_count                           NaN              NaN         NaN   
+providers_count                        NaN         1.000000    0.171819   
+PCPs_count                             NaN         0.171819    1.000000   
+vendors_count                          NaN         0.945981    0.172459   
+placesvc_count                         NaN         0.793960    0.153260   
+specialities_count                     NaN         0.890804    0.148227   
+primaryconditionGroups_count           NaN         0.793414    0.134534   
+
+                              vendors_count  placesvc_count  \
+memberid                           0.000747        0.001009   
+DaysInHospital_Y2                  0.194589        0.166937   
+predict                                 NaN             NaN   
+claims_count                            NaN             NaN   
+providers_count                    0.945981        0.793960   
+PCPs_count                         0.172459        0.153260   
+vendors_count                      1.000000        0.804744   
+placesvc_count                     0.804744        1.000000   
+specialities_count                 0.886129        0.780742   
+primaryconditionGroups_count       0.754058        0.656851   
+
+                              specialities_count  primaryconditionGroups_count  
+memberid                                0.000990                      0.000296  
+DaysInHospital_Y2                       0.150488                      0.188758  
+predict                                      NaN                           NaN  
+claims_count                                 NaN                           NaN  
+providers_count                         0.890804                      0.793414  
+PCPs_count                              0.148227                      0.134534  
+vendors_count                           0.886129                      0.754058  
+placesvc_count                          0.780742                      0.656851  
+specialities_count                      1.000000                      0.751032  
+primaryconditionGroups_count            0.751032                      1.000000  
+
+"""
