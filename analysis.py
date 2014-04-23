@@ -464,13 +464,15 @@ def RMSLE_Release3():
     allZero_RMSLE=math.sqrt(sum(dihY2['DaysInHospital_Y2'].apply(math.log1p).pow(2))/dihY2.shape[0])
     print allZero_RMSLE
     #dihY2['ans'] = pd.Series(dihY2['DaysInHospital_Y2'], index=dihY2.index)
-    dihY2['ans'] = pd.Series([0]*shape[0], index=dihY2.index)
+    dihY2['ans'] = pd.Series([0]*dihY2.shape[0], index=dihY2.index)
     #print dihY2
     diff=dihY2['DaysInHospital'].apply(math.log1p)-dihY2['ans'].apply(math.log1p)    
     diff=diff.pow(2)
     print math.sqrt(sum(diff)/dihY2.shape[0])
     #math.sqrt(sum(/dihY2.shape[0])
     return dihY2
+
+
 def calimsPlot():
     """
     ipython -pylab
@@ -582,7 +584,7 @@ def TestDays():
 
 
 def Merge():
-    dihY2=pd.read_csv("DayInHospital_Y2.csv")
+    dihY2   =pd.read_csv("DayInHospital_Y2.csv")
     dihY2.rename(columns={'memberid':'MemberID'},inplace=True)
     claims=pd.read_csv("Claims_Y1.csv")        
     m=pd.merge(claims,dihY2,on='MemberID')
@@ -1219,18 +1221,23 @@ def TestDays2():
     import itertools
     from sklearn.ensemble import RandomForestClassifier
     #itertools.permutations(["DaysInHospital_Y20","DaysInHospital_Y215","DaysInHospital_Y212","DaysInHospital_Y26","DaysInHospital_Y28","DaysInHospital_Y210", "DaysInHospital_Y214"])
+    m=pd.read_pickle("featuresSet")
+    features= list(m.columns)
+    """
     features=[
      "AgeAtFirstClaim80+",
      "CharlsonIndex1-2",
      "CharlsonIndex0",
     ]
+    """
+    
     combs = []
-    for i in xrange(1, len(features)+1):
+    for i in xrange(10,12): #xrange(100, len(features)+1):
         #combs.append(i)
         els = [list(x) for x in itertools.combinations(features, i)]
         combs.extend(els)
-    #return combs    
-    m=pd.load("featuresSet")
+    #return combs
+    print "features finsihed"
     result={}    
     for i in combs:
         X=m[i]
@@ -1238,9 +1245,9 @@ def TestDays2():
         X_train, X_test, y_train, y_test=cross_validation.train_test_split(X,Y,test_size=0.95,random_state=0)
         #clf = RandomForestClassifier(n_estimators=100)
         #clf = svm.SVC(kernel='rbf', C=1).fit(X_train, y_train)
-        clf = svm.SVC(kernel='linear', C=1).fit(X_train, y_train)
-        
-        #clf = clf.fit(X_train, y_train)
+        #clf = svm.SVC(kernel='linear', C=1).fit(X_train, y_train)
+        clf = svm.LinearSVC()
+        clf = clf.fit(X_train, y_train)
         score=clf.score(X_test, y_test)   
         print i,"=>",score
         result[str(i)]=score
@@ -1763,3 +1770,19 @@ def madDataTest():
     drugNull = -0.0667253925286
 
     """
+def TestUserInY2():
+    """
+    第二年有住院的特性
+    """
+    pass
+
+
+import pandas as pd
+dih=pd.read_csv("DayInHospital_Y2.csv")
+c=pd.read_csv("Claims_Y1.csv")
+dih['predict'] = pd.Series([0]*shape[0], index=dih.index)
+dih['predict'] = pd.Series([0]*dih.shape[0], index=dih.index)
+dih['claims_count'] = pd.Series([0]*dih.shape[0], index=dih.index)
+for i in dih.memberid:
+    dih.claims_count[dih.memberid==i]=c[c.MemberID==i].count()
+
