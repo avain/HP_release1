@@ -1823,11 +1823,11 @@ def FeatureGeneration():
     return c,dih
 
 """
-memberid  DaysInHospital_Y2  predict  \
+                              memberid  DaysInHospital_Y2  predict  \
 memberid                      1.000000          -0.002549      NaN   
 DaysInHospital_Y2            -0.002549           1.000000      NaN   
 predict                            NaN                NaN      NaN   
-claims_count                       NaN                NaN      NaN   
+claims_count                  0.001116           0.207071      NaN   
 providers_count               0.000478           0.199815      NaN   
 PCPs_count                   -0.002911           0.038937      NaN   
 vendors_count                 0.000747           0.194589      NaN   
@@ -1836,22 +1836,22 @@ specialities_count            0.000990           0.150488      NaN
 primaryconditionGroups_count  0.000296           0.188758      NaN   
 
                               claims_count  providers_count  PCPs_count  \
-memberid                               NaN         0.000478   -0.002911   
-DaysInHospital_Y2                      NaN         0.199815    0.038937   
+memberid                          0.001116         0.000478   -0.002911   
+DaysInHospital_Y2                 0.207071         0.199815    0.038937   
 predict                                NaN              NaN         NaN   
-claims_count                           NaN              NaN         NaN   
-providers_count                        NaN         1.000000    0.171819   
-PCPs_count                             NaN         0.171819    1.000000   
-vendors_count                          NaN         0.945981    0.172459   
-placesvc_count                         NaN         0.793960    0.153260   
-specialities_count                     NaN         0.890804    0.148227   
-primaryconditionGroups_count           NaN         0.793414    0.134534   
+claims_count                      1.000000         0.888641    0.155317   
+providers_count                   0.888641         1.000000    0.171819   
+PCPs_count                        0.155317         0.171819    1.000000   
+vendors_count                     0.842983         0.945981    0.172459   
+placesvc_count                    0.711457         0.793960    0.153260   
+specialities_count                0.806028         0.890804    0.148227   
+primaryconditionGroups_count      0.850573         0.793414    0.134534   
 
                               vendors_count  placesvc_count  \
 memberid                           0.000747        0.001009   
 DaysInHospital_Y2                  0.194589        0.166937   
 predict                                 NaN             NaN   
-claims_count                            NaN             NaN   
+claims_count                       0.842983        0.711457   
 providers_count                    0.945981        0.793960   
 PCPs_count                         0.172459        0.153260   
 vendors_count                      1.000000        0.804744   
@@ -1863,7 +1863,7 @@ primaryconditionGroups_count       0.754058        0.656851
 memberid                                0.000990                      0.000296  
 DaysInHospital_Y2                       0.150488                      0.188758  
 predict                                      NaN                           NaN  
-claims_count                                 NaN                           NaN  
+claims_count                            0.806028                      0.850573  
 providers_count                         0.890804                      0.793414  
 PCPs_count                              0.148227                      0.134534  
 vendors_count                           0.886129                      0.754058  
@@ -1871,4 +1871,97 @@ placesvc_count                          0.780742                      0.656851
 specialities_count                      1.000000                      0.751032  
 primaryconditionGroups_count            0.751032                      1.000000  
 
+[10 rows x 10 columns]
+
 """
+def MemberSexDig():
+    """
+    Member
+    Sex 
+    F:42461 
+    M:34828
+    claims
+    F:378963
+    M:265743
+    In [50]: m[m.sex=='F']['specialty'].value_counts()
+    Out[50]: 
+    Internal                     98531
+    General Practice             74932
+    Laboratory                   73700
+    Diagnostic Imaging           42153
+    Surgery                      27859
+    Emergency                    18435
+    Other                        12268
+    Obstetrics and Gynecology    10393
+    Pediatrics                    9188
+    Rehabilitation                4542
+    Anesthesiology                4472
+    Pathology                     2490
+    
+    In [51]: m[m.sex=='M']['specialty'].value_counts()
+    Out[51]: 
+    Internal                     72111
+    General Practice             54352
+    Laboratory                   50625
+    Surgery                      25915
+    Diagnostic Imaging           24488
+    Emergency                    13553
+    Other                         8715
+    Pediatrics                    8487
+    Anesthesiology                3027
+    Rehabilitation                2740
+    Pathology                     1704
+    Obstetrics and Gynecology       26
+
+                  M      F
+    ARTHSPIN  27324  44387
+    CANCRM       62    169
+    CATAST      205    240
+    CHF        1584   1588
+    COPD       5298   6408
+    FLaELEC     422    825
+    FXDISLC    4077   4605
+    GIBLEED   10986  17860
+    GIOBSENT   1239   1592
+    GYNEC1      416  10818
+    GYNECA       20   2349
+    HEART4     3391   3686
+    HEMTOL     2250   3944
+    HIPFX       243    780
+    INFEC4     9378  12163
+    LIVERDZ     358    392
+    METAB1      490    534
+    METAB3    32166  39634
+    MISCHRT   13293  18128
+    MISCL1      515    786
+    MISCL5     4864   7451
+    MSC2a3    41470  70029
+    NEUMENT   18719  27586
+    ODaBNCA    4418   7898
+    PERINTL      63     98
+    PNCRDZ       98    161
+    PNEUM      1268   1313
+    PRGNCY      184   7649
+    RESPR4    16149  21384
+    ROAMI      6029   6806
+    SEIZURE    2078   3084
+    SEPSIS       55     65
+    SKNAUT    11195  15706
+    STROKE      996   1153
+    TRAUMA     8994   9966
+    UTI        2286   7869
+    
+    [36 rows x 2 columns]
+
+
+    """
+    m=Merge()
+    F=m[m.sex=='F']['PrimaryConditionGroup'].value_counts()
+    M=m[m.sex=='M']['PrimaryConditionGroup'].value_counts()
+    #M.cumsum().plot()    
+    MF=pd.concat([M,F],axis=1)
+    MF[MF.M>MF.F]
+    MF[MF.M<MF.F]
+    
+    
+        
